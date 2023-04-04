@@ -1,0 +1,7 @@
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - bioconductor-clusterprofiler =4.6.0
+ - r-ggplot2 =3.4.1
+ - r-optparse =1.7.3

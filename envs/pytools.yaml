@@ -1,0 +1,10 @@
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - xlsxwriter =3.0.3
+ - openpyxl =3.0.9
+ - openssl =3.0.0
+ - pandas =1.4.1
+ - biopython =1.79
+ - interlap =0.2.7

@@ -1,0 +1,21 @@
+
+
+## Functional Analysis
+# The type of input files to expect either DESeq2 (RNAseq) or deltaTE (RNAseq+RIBOseq)
+diffexType: "deltaTE"
+# Folder containing excel files for each condition of interest
+diffexFolder: "deltaTE/"
+# The column that will be used as the ID for functional analysis. It has to be compatible with the SYMBOLs in the annotation database.
+idColumn: "Old_locus_tag"
+
+# KEGG ID for the organism
+keggOrgCode: "mma"
+# Annotation database of the organism (including KEGG ids)
+database: "databases/org.Mmazei.eg.db"
+
+# Cutoffs for ORA
+padjCutoff: 0.05
+log2fcCutoff: 1.0
+
+
+
