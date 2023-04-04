@@ -9,15 +9,24 @@ def parse_deltaTE(diffex_input, id_column, output_folder):
     ribo_df = diffex_input[[id_column, "RIBO_log2FoldChange", "RIBO_padj"]]
     rna_df = diffex_input[[id_column, "RNA_log2FoldChange", "RNA_padj"]]
 
-    ribo_df.columns = ["Locus_tag", "log2FoldChange", "padj"]
-    rna_df.columns = ["Locus_tag", "log2FoldChange", "padj"]
+    ribo_df.columns = ["Locus_tag", "log2FC", "padj"]
+    rna_df.columns = ["Locus_tag", "log2FC", "padj"]
+
+    ribo_df.dropna(inplace=True)
+    rna_df.dropna(inplace=True)
+
+    ribo_df.sort_values(by="log2FC", inplace=True, ascending=False)
+    rna_df.sort_values(by="log2FC", inplace=True, ascending=False)
 
     ribo_df.to_csv(output_folder / "ribo_diffex.tsv", sep="\t", index=False)
     rna_df.to_csv(output_folder / "rna_diffex.tsv", sep="\t", index=False)
 
 def parse_DESeq2(diffex_input, id_column, output_folder):
     rna_df = diffex_input[[id_column, "log2FC", "pvalue_adjusted"]]
-    rna_df.columns = ["Locus_tag", "log2FoldChange", "padj"]
+    rna_df.columns = ["Locus_tag", "log2FC", "padj"]
+
+    rna_df.dropna(inplace=True)
+    rna_df.sort_values(by="log2FC", inplace=True, ascending=False)
 
     rna_df.to_csv(output_folder / "rna_diffex.tsv", sep="\t", index=False)
 

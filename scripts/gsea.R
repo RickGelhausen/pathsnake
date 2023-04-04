@@ -13,8 +13,8 @@ option_list = list(
     make_option(c("-d", "--organism_database"), type="character", default=NULL, help="Annotation Database for the organism of interest", metavar="character"),
     make_option(c("-o", "--output_path"), type="character", default=NULL, help="The output path containg all output tables and plots.", metavar="character"),
     make_option(c("-p", "--padj_cutoff"), type="double", default=0.05, help="The p-value cutoff for the enrichment analysis", metavar="double"),
-    make_option(c("-l", "--log2FC_cutoff"), type="double", default=1, help="The log2FC cutoff for the enrichment analysis", metavar="double")
-    make_option(c("-k", "--keggOrgCode", type="character", default=NULL, help="The KEGG ID of the pathway of interest", metavar="character"))
+    make_option(c("-l", "--log2FC_cutoff"), type="double", default=1, help="The log2FC cutoff for the enrichment analysis", metavar="double"),
+    make_option(c("-k", "--keggOrgCode"), type="character", default=NULL, help="The KEGG ID of the pathway of interest", metavar="character")
 )
 
 opt_parser = OptionParser(option_list=option_list)
@@ -69,20 +69,20 @@ for (c_ont in ontologies) {
         tryCatch({
             ego <- enrichGO(names(genes_of_interest[[i]]), OrgDb=organism, keyType="SYMBOL", ont = c_ont, pvalueCutoff = 0.05, pAdjustMethod = "BH", readable = FALSE, minGSSize=5, maxGSSize=500)
             results <- data.frame(ego@result)
-            write.table(results[results$p.adjust <= 0.05, ], file = paste(opt$output_path, "/ORA/tables/results_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+            write.table(results[results$p.adjust <= 0.05, ], file = paste(opt$output_path, "/ORA/tables/results_GO_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
             ego_s <- simplify(ego)
             result_s <- data.frame(ego_s@result)
-            write.table(result_s, file = paste(opt$output_path, "/ORA/tables/results_simplified_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+            write.table(result_s, file = paste(opt$output_path, "/ORA/tables/results_GO_simplified_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
-            tryCatch({
-                ego_pt <- pairwise_termsim(ego, semData=d)
-                write.table(ego_pt@termsim, file = paste(opt$output_path, "/ORA/tables/pairwise_termsim_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
-                ggsave(paste(opt$output_path, "/ORA/plots/treeplot_ego_", c_ont, "_", regulation[i],".pdf", sep=""), plot=treeplot(ego_pt, fontsize=3), height=16, width=32, units=c("cm"), dpi=600)
-            }, error = function(e) {
-                print("Not enough terms to plot treeplot:")
-                print(e)
-            })
+            # tryCatch({
+            #     ego_pt <- pairwise_termsim(ego, semData=d)
+            #     #write.table(ego_pt@termsim, file = paste(opt$output_path, "/ORA/tables/pairwise_termsim_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+            #     #ggsave(paste(opt$output_path, "/ORA/plots/treeplot_ego_", c_ont, "_", regulation[i],".pdf", sep=""), plot=treeplot(ego_pt, fontsize=3), height=16, width=32, units=c("cm"), dpi=600)
+            # }, error = function(e) {
+            #     print("Not enough terms to plot treeplot:")
+            #     print(e)
+            # })
 
             tryCatch({
                 ggsave(paste(opt$output_path, "/ORA/plots/dotplot_ego_", c_ont, "_", regulation[i],".pdf", sep=""), plot=dotplot(ego, showCategory=15), height=20, width=16, units=c("cm"), dpi=600)
@@ -109,19 +109,17 @@ for (c_ont in ontologies) {
 # ################################################################################################################################################################
 
 
-# dir.create(paste(opt$output_path, "/KEGG/tables/", sep=""), recursive=TRUE)
-# dir.create(paste(opt$output_path, "/KEGG/plots/", sep=""), recursive=TRUE)
+dir.create(paste(opt$output_path, "/KEGG/tables/", sep=""), recursive=TRUE)
+dir.create(paste(opt$output_path, "/KEGG/plots/", sep=""), recursive=TRUE)
 
-# for (i in 1:length(regulation)) {
-#     d <- godata(organism, ont=c_ont, keytype="SYMBOL")
-
-#     kk <- enrichKEGG(gene=names(genes_of_interest[[i]]), organism="xcv", pvalueCutoff = 0.05, keyType= "SYMBOL")
-#     results <- data.frame(kk)
-#     write.table(results, file = paste(opt$output_path, "/KEGG/tables/results_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
-# }
+for (i in 1:length(regulation)) {
+    kk <- enrichKEGG(gene=names(genes_of_interest[[i]]), organism=opt$keggOrgCode, pvalueCutoff = 0.05, keyType="KEGG")
+    results <- data.frame(kk)
+    write.table(results, file = paste(opt$output_path, "/KEGG/tables/results_KEGG_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+}
 
 ################################################################################################################################################################
-################################################# GO GSEA
+################################################### GO GSEA
 ################################################################################################################################################################
 
 geneList <- data$log2FC
@@ -136,7 +134,7 @@ for (c_ont in ontologies) {
     tryCatch({
         gse <- gseGO(geneList=geneList, ont = c_ont, keyType = "SYMBOL", minGSSize = 5, maxGSSize = 500, pvalueCutoff = 0.05, verbose = TRUE, OrgDb = organism, nPermSimple = 100000, eps=0)
         results <- data.frame(gse@result)
-        write.table(results, file = paste(opt$output_path, "/GSEA/tables/results_gsea_", c_ont, ".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+        write.table(results, file = paste(opt$output_path, "/GSEA/tables/results_GO_gsea_", c_ont, ".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
         tryCatch({
             ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_", c_ont, "_", regulation[i],".pdf", sep=""), plot=dotplot(gse, showCategory=15), height=20, width=16, units=c("cm"), dpi=600)

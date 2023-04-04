@@ -11,6 +11,7 @@ CONTRASTS = []
 for x in files:
     CONTRASTS.append(x.stem.split("_")[0])
 
+print(CONTRASTS)
 
 include: "rules/dependencies.smk"
 
@@ -25,15 +26,13 @@ elif input_type == "DESeq2":
 
 
 output = []
-output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/results_BP_up.tsv", contrast=CONTRASTS))
-output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/results_MF_up.tsv", contrast=CONTRASTS))
-output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/results_CC_up.tsv", contrast=CONTRASTS))
-
+output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results.xlsx", contrast=CONTRASTS))
+output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results_simplified.xlsx", contrast=CONTRASTS))
+output.append(expand("functional_analysis/{contrast}/RNA/GSEA/tables/GSEA_GO_results.xlsx", contrast=CONTRASTS))
 if input_type == "deltaTE":
-    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/results_BP_up.tsv", contrast=CONTRASTS))
-    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/results_MF_up.tsv", contrast=CONTRASTS))
-    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/results_CC_up.tsv", contrast=CONTRASTS))
-
+    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/ORA_GO_results.xlsx", contrast=CONTRASTS))
+    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/ORA_GO_results_simplified.xlsx", contrast=CONTRASTS))
+    output.append(expand("functional_analysis/{contrast}/RIBO/GSEA/tables/GSEA_GO_results.xlsx", contrast=CONTRASTS))
 
 rule all:
     input:

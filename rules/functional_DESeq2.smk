@@ -3,15 +3,9 @@ rule callClusterProfilerRNA:
         tsv="functional_analysis/{contrast}/rna_diffex.tsv",
         rlib="rlib/" + os.path.basename(config["database"])
     output:
-        bpu="functional_analysis/{contrast}/RNA/ORA/tables/results_BP_up.tsv",
-        bpd="functional_analysis/{contrast}/RNA/ORA/tables/results_BP_down.tsv",
-        mfu="functional_analysis/{contrast}/RNA/ORA/tables/results_MF_up.tsv",
-        mfd="functional_analysis/{contrast}/RNA/ORA/tables/results_MF_down.tsv",
-        ccu="functional_analysis/{contrast}/RNA/ORA/tables/results_CC_up.tsv",
-        ccd="functional_analysis/{contrast}/RNA/ORA/tables/results_CC_down.tsv",
-        gseabp="functional_analysis/{contrast}/RNA/GSEA/tables/results_gsea_BP.tsv",
-        gseamf="functional_analysis/{contrast}/RNA/GSEA/tables/results_gsea_MF.tsv",
-        gseacc="functional_analysis/{contrast}/RNA/GSEA/tables/results_gsea_CC.tsv"
+        ora=temp(expand("functional_analysis/{{contrast}}/RNA/ORA/tables/results_GO_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
+        orasimp=temp(expand("functional_analysis/{{contrast}}/RNA/ORA/tables/results_GO_simplified_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
+        gsea=temp(expand("functional_analysis/{{contrast}}/RNA/GSEA/tables/results_GO_gsea_{ontology}.tsv", ontology=["BP", "MF", "CC"]))
     threads: 1
     conda:
         "../envs/functional.yaml"
@@ -24,4 +18,40 @@ rule callClusterProfilerRNA:
         """
         mkdir -p functional_analysis/{wildcards.contrast}/RNA/;
         pathsnake/scripts/gsea.R -d {params.database} -i {input.tsv} -o functional_analysis/{wildcards.contrast}/RNA/ -p {params.padjCutoff} -l {params.log2fcCutoff} -k {params.kegg_org_code}
+        """
+
+rule bundleResultsRNAora:
+    input:
+        rules.callClusterProfilerRNA.output.ora
+    output:
+        "functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results.xlsx"
+    conda:
+        "../envs/pytools.yaml"
+    shell:
+        """
+        python pathsnake/scripts/bundle_results.py -i {input} -o {output} -m "ORA"
+        """
+
+rule bundleResultsRNAoraSimple:
+    input:
+        rules.callClusterProfilerRNA.output.orasimp
+    output:
+        "functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results_simplified.xlsx"
+    conda:
+        "../envs/pytools.yaml"
+    shell:
+        """
+        python pathsnake/scripts/bundle_results.py -i {input} -o {output} -m "ORA"
+        """
+
+rule bundleResultsRNAgsea:
+    input:
+        rules.callClusterProfilerRNA.output.gsea
+    output:
+        "functional_analysis/{contrast}/RNA/GSEA/tables/GSEA_GO_results.xlsx"
+    conda:
+        "../envs/pytools.yaml"
+    shell:
+        """
+        python pathsnake/scripts/bundle_results.py -i {input} -o {output} -m "GSEA"
         """
