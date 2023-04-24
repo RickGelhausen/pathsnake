@@ -27,7 +27,7 @@ def main():
             if (ont, reg) not in ORA_dict:
                 ORA_dict[(ont, reg)] = pd.read_csv(file, sep="\t")
             else:
-                "ERROR: duplicate key"
+                print("ERROR: duplicate key")
 
         # create the output excel file
         writer = pd.ExcelWriter(args.output_xlsx, engine="xlsxwriter")
@@ -50,7 +50,7 @@ def main():
             if ont not in GSEA_dict:
                 GSEA_dict[ont] = pd.read_csv(file, sep="\t")
             else:
-                "ERROR: duplicate key"
+                print("ERROR: duplicate key")
 
         # create the output excel file
         writer = pd.ExcelWriter(args.output_xlsx, engine="xlsxwriter")

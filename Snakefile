@@ -29,10 +29,15 @@ output = []
 output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results.xlsx", contrast=CONTRASTS))
 output.append(expand("functional_analysis/{contrast}/RNA/ORA/tables/ORA_GO_results_simplified.xlsx", contrast=CONTRASTS))
 output.append(expand("functional_analysis/{contrast}/RNA/GSEA/tables/GSEA_GO_results.xlsx", contrast=CONTRASTS))
+output.append(expand("functional_analysis/{contrast}/RNA/ORA/plots/dotplot_ORA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"], contrast=CONTRASTS))
+output.append(expand("functional_analysis/{contrast}/RNA/GSEA/plots/dotplot_GSEA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"], contrast=CONTRASTS))
+
 if input_type == "deltaTE":
     output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/ORA_GO_results.xlsx", contrast=CONTRASTS))
     output.append(expand("functional_analysis/{contrast}/RIBO/ORA/tables/ORA_GO_results_simplified.xlsx", contrast=CONTRASTS))
     output.append(expand("functional_analysis/{contrast}/RIBO/GSEA/tables/GSEA_GO_results.xlsx", contrast=CONTRASTS))
+    output.append(expand("functional_analysis/{contrast}/RIBO/ORA/plots/dotplot_ORA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"], contrast=CONTRASTS))
+    output.append(expand("functional_analysis/{contrast}/RIBO/GSEA/plots/dotplot_GSEA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"], contrast=CONTRASTS))
 
 rule all:
     input:

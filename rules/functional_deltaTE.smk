@@ -5,7 +5,9 @@ rule callClusterProfilerRIBO:
     output:
         ora=temp(expand("functional_analysis/{{contrast}}/RIBO/ORA/tables/results_GO_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
         orasimp=temp(expand("functional_analysis/{{contrast}}/RIBO/ORA/tables/results_GO_simplified_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
-        gesa=temp(expand("functional_analysis/{{contrast}}/RIBO/GSEA/tables/results_GO_gsea_{ontology}.tsv", ontology=["BP", "MF", "CC"]))
+        gesa=temp(expand("functional_analysis/{{contrast}}/RIBO/GSEA/tables/results_GO_gsea_{ontology}.tsv", ontology=["BP", "MF", "CC"])),
+        oraplot=expand("functional_analysis/{{contrast}}/RIBO/ORA/plots/dotplot_ORA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"]),
+        gseaplot=expand("functional_analysis/{{contrast}}/RIBO/GSEA/plots/dotplot_GSEA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"])
     threads: 1
     conda:
         "../envs/functional.yaml"
@@ -27,7 +29,9 @@ rule callClusterProfilerRNA:
     output:
         ora=temp(expand("functional_analysis/{{contrast}}/RNA/ORA/tables/results_GO_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
         orasimp=temp(expand("functional_analysis/{{contrast}}/RNA/ORA/tables/results_GO_simplified_{ontology}_{regulation}.tsv", regulation=["up", "down"], ontology=["BP", "MF", "CC"])),
-        gsea=temp(expand("functional_analysis/{{contrast}}/RNA/GSEA/tables/results_GO_gsea_{ontology}.tsv", ontology=["BP", "MF", "CC"]))
+        gsea=temp(expand("functional_analysis/{{contrast}}/RNA/GSEA/tables/results_GO_gsea_{ontology}.tsv", ontology=["BP", "MF", "CC"])),
+        oraplot=expand("functional_analysis/{{contrast}}/RNA/ORA/plots/dotplot_ORA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"]),
+        gseaplot=expand("functional_analysis/{{contrast}}/RNA/GSEA/plots/dotplot_GSEA_GO_{ontology}_{regulation}.pdf", regulation=["up", "down"], ontology=["BP", "MF", "CC"])
     threads: 1
     conda:
         "../envs/functional.yaml"

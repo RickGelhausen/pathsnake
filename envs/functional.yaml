@@ -2,6 +2,8 @@ channels:
  - conda-forge
  - bioconda
 dependencies:
- - bioconductor-clusterprofiler =4.6.0
- - r-ggplot2 =3.4.1
- - r-optparse =1.7.3
+ - r-base =4.2.3
+ - r-devtools
+ - r-optparse
+ - r-forcats
+ - r-stringr

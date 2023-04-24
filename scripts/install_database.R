@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
 
 library(optparse)
+library(devtools)
+devtools::install_github("YuLab-SMU/clusterProfiler", lib = "rlib")
 
 option_list = list(
     make_option(c("-d", "--organism_database"), type="character", default=NULL, help="Annotation Database for the organism of interest", metavar="character")

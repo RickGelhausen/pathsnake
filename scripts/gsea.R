@@ -1,12 +1,17 @@
 #!/usr/bin/env Rscript
 
-library(clusterProfiler)
-library(enrichplot)
-library(GOSemSim)
-library(ggplot2)
+.libPaths( c( .libPaths(), "rlib") )
 
+library(clusterProfiler, lib.loc = "rlib")
+library(enrichplot, lib.loc = "rlib")
+library(GOSemSim, lib.loc = "rlib")
+library(dplyr, lib.loc = "rlib")
+library(ggplot2, lib.loc = "rlib")
+
+library(forcats)
 library(optparse)
-library(dplyr)
+library(stringr)
+
 
 option_list = list(
     make_option(c("-i", "--input_file"), type="character", default=NULL, help="File containing a column log2FC and an ID/gene symbol", metavar="character"),
@@ -38,11 +43,11 @@ data <- read.table(opt$input_file, header = TRUE, sep = "\t")
 geneList <- data$log2FC
 names(geneList) <- data$Locus_tag
 
-data_up <- filter(data, log2FC > opt$log2FC_cutoff & padj < opt$padj_cutoff)
+data_up <- filter(data, log2FC > opt$log2FC_cutoff)# & padj < opt$padj_cutoff)
 geneList_up <- data_up$log2FC
 names(geneList_up) <- data_up$Locus_tag
 
-data_down <- filter(data, log2FC < -opt$log2FC_cutoff & padj < opt$padj_cutoff)
+data_down <- filter(data, log2FC < -opt$log2FC_cutoff)# & padj < opt$padj_cutoff)
 geneList_down <- data_down$log2FC
 names(geneList_down) <- data_down$Locus_tag
 
@@ -69,8 +74,9 @@ for (c_ont in ontologies) {
         tryCatch({
             ego <- enrichGO(names(genes_of_interest[[i]]), OrgDb=organism, keyType="SYMBOL", ont = c_ont, pvalueCutoff = 0.05, pAdjustMethod = "BH", readable = FALSE, minGSSize=5, maxGSSize=500)
             results <- data.frame(ego@result)
-            write.table(results[results$p.adjust <= 0.05, ], file = paste(opt$output_path, "/ORA/tables/results_GO_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+            write.table(results, file = paste(opt$output_path, "/ORA/tables/results_GO_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
+            #[results$p.adjust <= 0.05, ]
             ego_s <- simplify(ego)
             result_s <- data.frame(ego_s@result)
             write.table(result_s, file = paste(opt$output_path, "/ORA/tables/results_GO_simplified_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
@@ -85,7 +91,7 @@ for (c_ont in ontologies) {
             # })
 
             tryCatch({
-                ggsave(paste(opt$output_path, "/ORA/plots/dotplot_ego_", c_ont, "_", regulation[i],".pdf", sep=""), plot=dotplot(ego, showCategory=15), height=20, width=16, units=c("cm"), dpi=600)
+                ggsave(paste(opt$output_path, "/ORA/plots/dotplot_ORA_GO_", c_ont, "_", regulation[i],".pdf", sep=""), plot=dotplot(ego, showCategory=15), height=20, width=16, units=c("cm"), dpi=600)
             }, error = function(e) {
                 print("Not enough terms to plot dotplot:")
                 print(e)
@@ -98,7 +104,7 @@ for (c_ont in ontologies) {
                  Characters=character(),
                  stringsAsFactors=FALSE)
 
-            write.table(df, file = paste(opt$output_path, "/ORA/tables/results_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
+            write.table(df, file = paste(opt$output_path, "/ORA/tables/results_GO_", c_ont, "_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
             print(e)
         })
     }
@@ -113,7 +119,7 @@ dir.create(paste(opt$output_path, "/KEGG/tables/", sep=""), recursive=TRUE)
 dir.create(paste(opt$output_path, "/KEGG/plots/", sep=""), recursive=TRUE)
 
 for (i in 1:length(regulation)) {
-    kk <- enrichKEGG(gene=names(genes_of_interest[[i]]), organism=opt$keggOrgCode, pvalueCutoff = 0.05, keyType="KEGG")
+    kk <- enrichKEGG(gene=names(genes_of_interest[[i]]), organism="mma", pvalueCutoff = 0.05, keyType="kegg")
     results <- data.frame(kk)
     write.table(results, file = paste(opt$output_path, "/KEGG/tables/results_KEGG_", regulation[i],".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 }
@@ -121,6 +127,16 @@ for (i in 1:length(regulation)) {
 ################################################################################################################################################################
 ################################################### GO GSEA
 ################################################################################################################################################################
+
+hjust_value = 1.0
+color_limits = c(0.00, 0.05)  # <-- The cutoff for the color scale for the plot.
+count_limits = c(1, 21) # <-- The cutoff for the size of the dots. If < 20 the last dot > 20 dissapears.
+break_bin = c(5,10,15,20) # <-- Bins to be shown for the count scale.
+radius_range = c(1,11) # <-- Size of the dots.
+
+low_color = "orange" # <-- Color for the dots for the low values
+high_color = "blue" # <-- Color for the dots for the high values
+na_color = "black" # <-- Color for the dots when no values exist
 
 geneList <- data$log2FC
 names(geneList) <- data$Locus_tag
@@ -136,8 +152,44 @@ for (c_ont in ontologies) {
         results <- data.frame(gse@result)
         write.table(results, file = paste(opt$output_path, "/GSEA/tables/results_GO_gsea_", c_ont, ".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
+        gene_count <- results %>% group_by(ID) %>% summarise(count = sum(str_count(core_enrichment, "/")) +1)
+        dot_df <- left_join(results, gene_count, by = "ID") %>% mutate(GeneRatio = count/setSize)
+
         tryCatch({
-            ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_", c_ont, "_", regulation[i],".pdf", sep=""), plot=dotplot(gse, showCategory=15), height=20, width=16, units=c("cm"), dpi=600)
+            df_up <- dot_df[dot_df$enrichmentScore >= 0,]
+            df_up_sorted <- df_up %>% arrange(desc(enrichmentScore))
+            df_up_sorted <- df_up_sorted[1:10,]
+
+            df_down <- dot_df[dot_df$enrichmentScore < 0,]
+            df_down_sorted <- df_down %>% arrange(enrichmentScore)
+            df_down_sorted <- df_down_sorted[1:10,]
+
+            print(df_up_sorted)
+            print(df_down_sorted)
+
+            p_up <- ggplot(df_up_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = FALSE))) +
+                    geom_point(aes(size = count, color = p.adjust)) +
+                    scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
+                    scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
+                    ylab(NULL) +
+                    xlim(0.6, 1.0) +
+                    ggtitle("Upregulated") +
+                    theme_bw(base_size = 12) +
+                    theme(plot.title = element_text(hjust = hjust_value))
+
+            p_down <- ggplot(df_down_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = TRUE))) +
+                    geom_point(aes(size = count, color = p.adjust)) +
+                    scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
+                    scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
+                    ylab(NULL) +
+                    scale_x_reverse(limits=c(-0.6,-1.0)) +
+                    ggtitle("Downregulated") +
+                    theme_bw(base_size = 12) +
+                    theme(plot.title = element_text(hjust = hjust_value))
+
+            ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_up.pdf", sep=""), plot=p_up, height=20, width=16, units=c("cm"), dpi=600)
+            ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_down.pdf", sep=""), plot=p_down, height=20, width=16, units=c("cm"), dpi=600)
+
         }, error = function(e) {
             print("Not enough terms to plot dotplot:")
             print(e)
