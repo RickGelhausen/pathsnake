@@ -43,11 +43,11 @@ data <- read.table(opt$input_file, header = TRUE, sep = "\t")
 geneList <- data$log2FC
 names(geneList) <- data$Locus_tag
 
-data_up <- filter(data, log2FC > opt$log2FC_cutoff)# & padj < opt$padj_cutoff)
+data_up <- filter(data, log2FC > opt$log2FC_cutoff) & padj < opt$padj_cutoff)
 geneList_up <- data_up$log2FC
 names(geneList_up) <- data_up$Locus_tag
 
-data_down <- filter(data, log2FC < -opt$log2FC_cutoff)# & padj < opt$padj_cutoff)
+data_down <- filter(data, log2FC < -opt$log2FC_cutoff) & padj < opt$padj_cutoff)
 geneList_down <- data_down$log2FC
 names(geneList_down) <- data_down$Locus_tag
 

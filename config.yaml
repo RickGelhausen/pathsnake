@@ -15,7 +15,7 @@ database: "databases/org.Mmazei.eg.db"
 
 # Cutoffs for ORA
 padjCutoff: 0.05
-log2fcCutoff: 1.0
+log2fcCutoff: 0
 
 
 
