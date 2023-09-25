@@ -7,9 +7,9 @@ To run the workflow, install snakemake.
 
 Set up the config file:
 
-Set the path to the deltaTE output folder retrieved from HRIBO.
-Set the organism code for KEGG.
-Set the organism annotation database for clusterprofiler.
+* Set the path to the deltaTE output folder retrieved from HRIBO.
+* Set the organism code for KEGG.
+* Set the organism annotation database for clusterprofiler.
 
 Run the workflow by calling:
 
