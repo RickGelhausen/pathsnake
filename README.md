@@ -132,3 +132,18 @@ snakemake -p -k --use-conda -s pathsnake/Snakefile --configfile pathsnake/config
 ```
 
 :warning: Snakemake creates a hidden `.snakemake` folder with all the dependencies required to run the tool, make sure to delete it when you no longer need the tool.
+
+## Custom changes
+
+Unfortunately, it is very hard to create universally well-looking plots for every kind input data using `clusterprofiler`.
+Known issues might be:
+
+- manual filtering of redundant terms
+- very long GO Terms that break the plotting
+- custom coloring
+- custom setup of conditions
+- etc ...
+
+This was also needed for the data used in our publication, therefore we used the script provided in the `custom_scripts` subfolder to customize the appearance of our output results.
+
+We added it for reproducability of our plots and to expose the functions that can be used to customize your plots using `ggplot2`.
