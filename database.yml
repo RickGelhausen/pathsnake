@@ -1,5 +1,7 @@
 name: database_creation
 channels:
+  - conda-forge
+  - bioconda
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
@@ -46,7 +48,6 @@ dependencies:
   - harfbuzz=6.0.0=h8e241bc_0
   - icu=70.1=h27087fc_0
   - jpeg=9e=h0b41bf4_3
-  - jq=1.5=0
   - kernel-headers_linux-64=2.6.32=he073ed8_15
   - keyutils=1.6.1=h166bdaf_0
   - krb5=1.20.1=h81ceb04_0

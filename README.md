@@ -125,7 +125,7 @@ Set up the config file:
 
 Run the workflow by calling:
 
-:warning: Function calls may differ depending on what machine you use and what resources you have available.
+:warning: Function calls may differ depending on what machine you use and what resources you have available. This call assumes that the input data is in the same folder as the pathsnake repository.
 
 ```
 snakemake -p -k --use-conda -s pathsnake/Snakefile --configfile pathsnake/config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
@@ -151,10 +151,24 @@ We added it for reproducability of our plots and to expose the functions that ca
 
 ## Example
 
+Before starting with the example run, download the repository onto your `linux` machine. We tested this on a system using `Ubuntu 20.04.3 LTS`.
+
+```
+git clone https://github.com/RickGelhausen/pathsnake.git
+```
+
+:exclamation: For the remainder of this example, we will assume that you navigated into the downloaded repository.
+
 ### Database generation
 
 First we will generate the database for methanosarcina mazei.
 
 :exclamation: This step can be skipped, the finished database is in the `example` folder.
 
-1.
+1. Install the dependencies:
+
+```
+conda env create -f database.yml
+```
+
+2.
