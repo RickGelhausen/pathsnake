@@ -1,7 +1,15 @@
 import pandas as pd
+import argparse
+from pathlib import Path
+
+
+parser = argparse.ArgumentParser(description='Extract the useful information from the xlsx file')
+parser.add_argument("-t", "--tsv", action="store", dest="tsv", required=True, type=str, help= "Input tsv file")
+parser.add_argument("-o", "--output", action="store", dest="output_folder", required=True, type=Path, help= "Output folder.")
+args = parser.parse_args()
 
 # Read in the data
-df = pd.read_csv('methanosarcina_uniprot_230403.tsv', sep='\t')
+df = pd.read_csv(args.tsv, sep='\t')
 
 # Filter the data
 df = df[df['Entry Name'].str.contains('METMA')]
@@ -52,23 +60,23 @@ for row in go_df.itertuples(index=False, name=None):
     rows_go_all.extend([(gid, term, "IEA") for term in parse_goterms(row[3])])
 
 
-with open("go.csv", "w") as f:
+with open(args.output_folder / "go.csv", "w") as f:
     f.write("GID,GO,EVIDENCE\n")
     for row in rows_go_all:
         f.write(f"{row[0]},{row[1]},{row[2]}\n")
 
-with open("refseq.csv", "w") as f:
+with open(args.output_folder / "refseq.csv", "w") as f:
     f.write("GID,SYMBOL\n")
     for row in rows_refseq:
         f.write(f"{row[0]},{row[1]}\n")
 
-with open("ko.csv", "w") as f:
+with open(args.output_folder / "ko.csv", "w") as f:
     f.write("GID,KEGG\n")
     for row in rows_kegg:
         f.write(f"{row[0]},{row[1]}\n")
 
-with open("uniprot.csv", "w") as f:
+with open(args.output_folder / "uniprot.csv", "w") as f:
     f.write("GID,UNIPROT\n")
     for row in rows_uniprot:
         f.write(f"{row[0]},{row[1]}\n")
-        
+

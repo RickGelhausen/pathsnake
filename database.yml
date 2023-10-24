@@ -1,4 +1,5 @@
 name: database_creation
+channel_priority: flexible
 channels:
   - bioconda
   - conda-forge

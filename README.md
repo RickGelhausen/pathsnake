@@ -149,5 +149,12 @@ This was also needed for the data used in our publication, therefore we used the
 We added it for reproducability of our plots and to expose the functions that can be used to customize your plots using `ggplot2`.
 
 
-## Example run
+## Example
 
+### Database generation
+
+First we will generate the database for methanosarcina mazei.
+
+:exclamation: This step can be skipped, the finished database is in the `example` folder.
+
+1.
