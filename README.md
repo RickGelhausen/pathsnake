@@ -5,6 +5,8 @@ This workflow was developed to be used with the processing pipeline of [HRIBO](h
 
 :bulb: An example and a description on how to run it is available in the [example section](#example) :bulb:
 
+:exclamation: We suggest installing dependencies for the tools using [conda](https://docs.conda.io/en/latest/). We suggest installing [miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html).
+
 ## Creating an annotation database
 
 To run pathsnake which uses the tool [clusterprofiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), an annotation database is needed to perform [Gene Ontology](https://geneontology.org/) Term-based enrichment analysis.
@@ -199,6 +201,31 @@ This will create the database into a new folder `example/test_database/` and tes
 1. Install the dependencies:
 
 ```
-conda env create -f database.yml
-conda activate database_creation
+conda env create -f snakemake.yml
+conda activate snakemake
 ```
+
+2. Prepare your differential expression results
+
+We use results from the tool `deltaTE`, generated using `HRIBO`. If you want to use your own data please refer to [this section](#the-deltate-or-deseq-output).
+
+We provide a mock example file in the `example` folder.
+
+3. Setup the config file
+
+This is already prepared to be used for this example.
+
+It contains information on the location of the input file, the column to use as an identifier and kegg ids to be used.
+
+4. Run the workflow
+
+To run the workflow, simply call snakemake and it will automatically download the dependencies.
+
+```
+snakemake -p -k --use-conda -s Snakefile --configfile config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
+```
+
+5. Inspecting the results
+
+
+6. Postprocessing the data
