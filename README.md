@@ -134,7 +134,7 @@ Run the workflow by calling:
 :warning: Function calls may differ depending on what machine you use and what resources you have available. This call assumes that the input data is in the same folder as the pathsnake repository.
 
 ```
-snakemake -p -k --use-conda -s pathsnake/Snakefile --configfile pathsnake/config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
+snakemake -p -k --use-conda -s pathsnake/Snakefile --configfile pathsnake/config.yaml --directory ${PWD} -j 20 --latency-wait 60
 ```
 
 :warning: Snakemake creates a hidden `.snakemake` folder with all the dependencies required to run the tool, make sure to delete it when you no longer need the tool.
@@ -213,6 +213,8 @@ We use results from the tool `deltaTE`, generated using `HRIBO`. If you want to 
 
 We provide a mock example file in the `example` folder.
 
+:exclamation: The values in this file are completely unrelated to the real results provided in the publication.
+
 3. Setup the config file
 
 This is already prepared to be used for this example.
@@ -224,10 +226,46 @@ It contains information on the location of the input file, the column to use as 
 To run the workflow, simply call snakemake and it will automatically download the dependencies.
 
 ```
-nohup snakemake -p -k --use-conda -s Snakefile --configfile config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
+nohup snakemake -p -k --use-conda -s pathsnake/Snakefile --configfile pathsnake/config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
 ```
+
+:exclamation: The first run can take a long time due to the installation of all the R dependencies. Subsequent runs will be a lot faster.
 
 5. Inspecting the results
 
+The results are automatically put into a folder called `functional_analysis`.
 
-6. Postprocessing the data
+This folder contains all `contrasts` for different input excel files. Inside of these folders the following files are available:
+
+- ribo_diffex.tsv and rna_diffex.tsv: These files contain the raw input data for the tool deltaTE.
+- RIBO / RNA folders: These contain the results for the RIBO-seq and RNA-seq data respectively.
+- GSEA / KEGG / ORA folders: These contain the results for the Gene Set Enrichment Analysis, the KEGG analysis and the Over Representation Analysis respectively.
+- plots / tables folders: These contain the plots or tables resulting from `clusterProfiler`.
+
+:warning: When using badly annotated organisms, clusterProfiler cannot detect meaningful results. This can result in some of the output files missing. Furthermore, the resulting plots can be very much skewed and unusable for publication. Therefore we suggest inspecting the tables and manually creating the plots. A major issue with this type of analysis is redundancy of GO Terms, which requires some post-processing of the data.
+
+
+6. Custom scripts
+
+Often the resulting tables and plots are not very desirable. Therefore, we usually manually customize the plots after inspecting the output tables of `clusterprofiler`.
+
+The plotting script can be adapted and called for specific files with adapted ggplot2 functions.
+
+```
+Rscript custom_scripts/plot_ORA_mmazei.R
+```
+
+Using the following command line arguments.
+
+```
+option_list = list(
+    make_option(c("-i", "--input_file"), type="character", default=NULL, help="File containing a column log2FC and an ID/gene symbol", metavar="character"),
+    make_option(c("-d", "--organism_database"), type="character", default=NULL, help="Annotation Database for the organism of interest", metavar="character"),
+    make_option(c("-o", "--output_path"), type="character", default=NULL, help="The output path containg all output tables and plots.", metavar="character"),
+    make_option(c("-p", "--padj_cutoff"), type="double", default=0.05, help="The p-value cutoff for the enrichment analysis", metavar="double"),
+    make_option(c("-l", "--log2FC_cutoff"), type="double", default=1, help="The log2FC cutoff for the enrichment analysis", metavar="double")
+)
+```
+
+:exclamation: This script allows to customize the ORA plots by changing the scripts. Other custom scripts can be written. This is just an example of how we created the final plots for the publication.
+
