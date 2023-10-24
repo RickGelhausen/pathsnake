@@ -21,19 +21,19 @@ for (i in seq_along(args)) {
 
   if (arg == "--input_folder") {
     input_folder <- next_arg
-  } elif (arg == "--output_dir") {
+  } else if (arg == "--output_dir") {
     output_dir <- next_arg
-  } elif (arg == "--version") {
+  } else if (arg == "--version") {
     version_num <- next_arg
-  } elif (arg == "--maintainer") {
+  } else if (arg == "--maintainer") {
     maintainer_info <- next_arg
-  } elif (arg == "--author") {
+  } else if (arg == "--author") {
     author_info <- next_arg
-  } elif (arg == "--tax_id") {
+  } else if (arg == "--tax_id") {
     tax_id_num <- next_arg
-  } elif (arg == "--genus") {
+  } else if (arg == "--genus") {
     genus_name <- next_arg
-  } elif (arg == "--species") {
+  } else if (arg == "--species") {
     species_name <- next_arg
   }
 }
