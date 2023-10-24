@@ -2,7 +2,7 @@
 
 ## Functional Analysis
 # The type of input files to expect either DESeq2 (RNAseq) or deltaTE (RNAseq+RIBOseq)
-diffexType: "example/deltaTE"
+diffexType: "deltaTE"
 # Folder containing excel files for each condition of interest
 diffexFolder: "example/deltaTE/"
 # The column that will be used as the ID for functional analysis. It has to be compatible with the SYMBOLs in the annotation database.

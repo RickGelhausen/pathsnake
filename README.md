@@ -116,6 +116,8 @@ The required format for `deseq2` is:
 
 As long as this format is met, any results can be used.
 
+Multiple files `excel` files can be present in the folder, they will be automatically processed in parallel. (e.g. for multiple conditions)
+
 #### Configuration file
 
 Set up the config file:
@@ -222,7 +224,7 @@ It contains information on the location of the input file, the column to use as 
 To run the workflow, simply call snakemake and it will automatically download the dependencies.
 
 ```
-snakemake -p -k --use-conda -s Snakefile --configfile config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
+nohup snakemake -p -k --use-conda -s Snakefile --configfile config.yaml --directory ${PWD} -j 20 --latency-wait 60 &
 ```
 
 5. Inspecting the results
