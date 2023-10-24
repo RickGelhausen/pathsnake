@@ -60,6 +60,8 @@ colnames(symbol_data) <- c("GID", "SYMBOL")
 uniprot_data <- read.table(uniprot_file, sep=",", header=TRUE)
 colnames(uniprot_data) <- c("GID", "UNIPROT")
 
+dir.create(output_dir, recursive=TRUE)
+
 makeOrgPackage(gene_info=symbol_data, go=go_data, ko=ko_data, uniprot=uniprot_data,
                version=version_num,
                maintainer=maintainer_info,
