@@ -7,7 +7,7 @@ This workflow was developed to be used with the processing pipeline of [HRIBO](h
 
 To run pathsnake which uses the tool [clusterprofiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), an annotation database is needed to perform [Gene Ontology](https://geneontology.org/) Term-based enrichment analysis.
 
-When no curated database is available for an organism (e.g. for [E.coli](https://bioconductor.org/packages/release/data/annotation/html/org.EcK12.eg.db.html)), it is possible to create a database based on an existing annotation. In our case, we use the [UniProtKB](https://www.uniprot.org/) to retrieve available GO Term annotation and create an annotation database.
+When no curated database is available for an organism (e.g. for [E. coli](https://bioconductor.org/packages/release/data/annotation/html/org.EcK12.eg.db.html)), it is possible to create a database based on an existing annotation. In our case, we use the [UniProtKB](https://www.uniprot.org/) to retrieve available GO Term annotation and create an annotation database.
 
 The general idea of this method is to retrieve a table of Gene Identifiers and GO Terms, which can be turned into an SQ-lite Database. This method will work with any table of GO Terms / GeneIDs (and others... It only requires structuring said table correctly).
 
@@ -25,7 +25,7 @@ If you want to create your own database, the following dependencies are needed t
 - bioconductor-annotationforge
 - bioconductor-go.db
 
-You can install these using conda with the `database.yml`.
+You can install these using conda with the `database.yml`. All tool versions used for our analysis can be found in this file.
 
 ```
 conda env create -f database.yml
@@ -147,3 +147,7 @@ Known issues might be:
 This was also needed for the data used in our publication, therefore we used the script provided in the `custom_scripts` subfolder to customize the appearance of our output results.
 
 We added it for reproducability of our plots and to expose the functions that can be used to customize your plots using `ggplot2`.
+
+
+## Example run
+
