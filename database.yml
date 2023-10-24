@@ -1,8 +1,5 @@
 name: database_creation
-channel_priority: flexible
 channels:
-  - bioconda
-  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
