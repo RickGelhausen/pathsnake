@@ -163,12 +163,28 @@ git clone https://github.com/RickGelhausen/pathsnake.git
 
 First we will generate the database for methanosarcina mazei.
 
-:exclamation: This step can be skipped, the finished database is in the `example` folder.
+:exclamation: The database generation step can be skipped. The finished database can be found in the `example` folder.
 
 1. Install the dependencies:
 
 ```
 conda env create -f database.yml
+conda activate database_creation
 ```
 
-2.
+2. Run the filtering script on the UniProtKB table:
+
+:exclamation: Details on how to get this file for your organism can be found here: [UniProtKB](#the-uniprotkb-table).
+
+```
+python3 database_creation/filter_uniprot_table.py -t=example/methanosarcina_uniprot_230403.tsv -o=example/
+```
+
+This will filter the file for missing IDs and remove incomplete entries. It will create 4 tables that will subsequently be used to create tables in the SQLite database.
+
+3. Building the database using `annotationForge`:
+
+```
+Rscript database_creation
+```
+
