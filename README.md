@@ -3,6 +3,8 @@
 A workflow to perform functional enrichment analysis for prokaryotes using deltaTE or DESeq2 input.
 This workflow was developed to be used with the processing pipeline of [HRIBO](https://github.com/RickGelhausen/HRIBO), but will also work with any other correctly formatted input data.
 
+:bulb: An example and a description on how to run it is available in the [example section](#example) :bulb:
+
 ## Creating an annotation database
 
 To run pathsnake which uses the tool [clusterprofiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html), an annotation database is needed to perform [Gene Ontology](https://geneontology.org/) Term-based enrichment analysis.
@@ -159,6 +161,8 @@ git clone https://github.com/RickGelhausen/pathsnake.git
 
 :exclamation: For the remainder of this example, we will assume that you navigated into the downloaded repository.
 
+:warning: `conda` might take a long time to install the dependencies. If this is the case, we suggest to use `mamba` instead.
+
 ### Database generation
 
 First we will generate the database for methanosarcina mazei.
@@ -185,6 +189,16 @@ This will filter the file for missing IDs and remove incomplete entries. It will
 3. Building the database using `annotationForge`:
 
 ```
-Rscript database_creation
+Rscript database_creation/make_annotation_db.R --input_folder example/ --output_dir example/test_database/ --version "0.1" --maintainer "Main Tainer <main.tainer@email.com>" --author "Au Thor <au.thor@email.com>" --tax_id 192952 --genus "Methanosarcina" --species "mazei"
 ```
 
+This will create the database into a new folder `example/test_database/` and tests whether it can be loaded via `R`.
+
+### Pathsnake
+
+1. Install the dependencies:
+
+```
+conda env create -f database.yml
+conda activate database_creation
+```
