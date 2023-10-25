@@ -6,8 +6,8 @@ from pathlib import Path
 
 
 def parse_deltaTE(diffex_input, id_column, output_folder):
-    ribo_df = diffex_input[[id_column, "RIBO_log2FoldChange", "RIBO_padj"]]
-    rna_df = diffex_input[[id_column, "RNA_log2FoldChange", "RNA_padj"]]
+    ribo_df = diffex_input[[id_column, "RIBO_log2FoldChange", "RIBO_padj"]].copy()
+    rna_df = diffex_input[[id_column, "RNA_log2FoldChange", "RNA_padj"]].copy()
 
     ribo_df.columns = ["Locus_tag", "log2FC", "padj"]
     rna_df.columns = ["Locus_tag", "log2FC", "padj"]
