@@ -1,14 +1,15 @@
 #!/usr/bin/env Rscript
 
-library(optparse)
-library(devtools)
-
 if (!dir.exists("rlib")) {
   dir.create("rlib")
 }
 
-# Install polyclip into the rlib folder
-install.packages("polyclip", lib = "rlib", repos = "http://cran.us.r-project.org")
+.libPaths( c( .libPaths(), "rlib") )
+
+library(optparse)
+library(devtools)
+
+devtools::install_github("GuangchuangYu/GOSemSim", lib = "rlib")
 devtools::install_github("YuLab-SMU/clusterProfiler", lib = "rlib")
 
 option_list = list(

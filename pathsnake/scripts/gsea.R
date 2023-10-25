@@ -31,7 +31,8 @@ if (is.null(opt$organism_database) || is.null(opt$input_file) || is.null(opt$out
 }
 
 organism_database <- opt$organism_database
-organism <- strsplit(organism_database, "/")[[1]][2]
+organism <- basename(organism_database)
+
 
 library(organism, character.only = TRUE, lib.loc = "rlib")
 
@@ -43,11 +44,11 @@ data <- read.table(opt$input_file, header = TRUE, sep = "\t")
 geneList <- data$log2FC
 names(geneList) <- data$Locus_tag
 
-data_up <- filter(data, log2FC > opt$log2FC_cutoff) & padj < opt$padj_cutoff)
+data_up <- filter(data, log2FC > opt$log2FC_cutoff & padj < opt$padj_cutoff)
 geneList_up <- data_up$log2FC
 names(geneList_up) <- data_up$Locus_tag
 
-data_down <- filter(data, log2FC < -opt$log2FC_cutoff) & padj < opt$padj_cutoff)
+data_down <- filter(data, log2FC < -opt$log2FC_cutoff & padj < opt$padj_cutoff)
 geneList_down <- data_down$log2FC
 names(geneList_down) <- data_down$Locus_tag
 
