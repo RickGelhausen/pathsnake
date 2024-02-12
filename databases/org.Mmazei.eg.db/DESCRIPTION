@@ -1,0 +1,13 @@
+Package: org.Mmazei.eg.db
+Title: Genome wide annotation for Methanosarcina mazei
+Description: Genome wide annotation for Methanosarcina mazei, primarily based on mapping using Entrez Gene identifiers.
+Version: 0.1
+Author: Rick Gelhausen <gelhausr@informatik.uni-freiburg.de>
+Maintainer: Rick Gelhausen <gelhausr@informatik.uni-freiburg.de>
+Depends: R (>= 2.7.0), methods, AnnotationDbi (>= 1.60.0)
+Suggests: DBI, annotate, RUnit
+License: Artistic-2.0
+organism: Methanosarcina mazei
+species: Methanosarcina mazei
+biocViews: OrgDb, annotation
+

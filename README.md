@@ -267,5 +267,5 @@ option_list = list(
 )
 ```
 
-:exclamation: This script allows to customize the ORA plots by changing the scripts. Other custom scripts can be written. This is just an example of how we created the final plots for the publication.
+:exclamation: This script allows to customize the ORA plots by changing the scripts. This is just an example of how we created the final plots for the publication.
 
