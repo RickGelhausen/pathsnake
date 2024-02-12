@@ -31,7 +31,8 @@ if (is.null(opt$organism_database) || is.null(opt$input_file) || is.null(opt$out
 }
 
 organism_database <- opt$organism_database
-organism <- strsplit(organism_database, "/")[[1]][2]
+organism <- basename(organism_database)
+
 
 library(organism, character.only = TRUE, lib.loc = "rlib")
 
@@ -43,11 +44,11 @@ data <- read.table(opt$input_file, header = TRUE, sep = "\t")
 geneList <- data$log2FC
 names(geneList) <- data$Locus_tag
 
-data_up <- filter(data, log2FC > opt$log2FC_cutoff) & padj < opt$padj_cutoff)
+data_up <- filter(data, log2FC > opt$log2FC_cutoff & padj < opt$padj_cutoff)
 geneList_up <- data_up$log2FC
 names(geneList_up) <- data_up$Locus_tag
 
-data_down <- filter(data, log2FC < -opt$log2FC_cutoff) & padj < opt$padj_cutoff)
+data_down <- filter(data, log2FC < -opt$log2FC_cutoff & padj < opt$padj_cutoff)
 geneList_down <- data_down$log2FC
 names(geneList_down) <- data_down$Locus_tag
 
@@ -64,8 +65,8 @@ ontologies <- c("BP", "MF", "CC")
 regulation <- c("up", "down")
 genes_of_interest <- list(genes_of_interest_up, genes_of_interest_down)
 
-dir.create(paste(opt$output_path, "/ORA/tables/", sep=""), recursive=TRUE)
-dir.create(paste(opt$output_path, "/ORA/plots/", sep=""), recursive=TRUE)
+dir.create(paste(opt$output_path, "ORA/tables/", sep=""), recursive=TRUE)
+dir.create(paste(opt$output_path, "ORA/plots/", sep=""), recursive=TRUE)
 for (c_ont in ontologies) {
     for (i in 1:length(regulation)) {
         d <- godata(organism, ont=c_ont, keytype="SYMBOL")
@@ -152,45 +153,47 @@ for (c_ont in ontologies) {
         results <- data.frame(gse@result)
         write.table(results, file = paste(opt$output_path, "/GSEA/tables/results_GO_gsea_", c_ont, ".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
 
-        gene_count <- results %>% group_by(ID) %>% summarise(count = sum(str_count(core_enrichment, "/")) +1)
-        dot_df <- left_join(results, gene_count, by = "ID") %>% mutate(GeneRatio = count/setSize)
+            gene_count <- results %>% group_by(ID) %>% summarise(count = sum(str_count(core_enrichment, "/")) +1)
+            dot_df <- left_join(results, gene_count, by = "ID") %>% mutate(GeneRatio = count/setSize)
 
-        tryCatch({
-            df_up <- dot_df[dot_df$enrichmentScore >= 0,]
-            df_up_sorted <- df_up %>% arrange(desc(enrichmentScore))
-            df_up_sorted <- df_up_sorted[1:10,]
+            tryCatch({
+                df_up <- dot_df[dot_df$enrichmentScore >= 0,]
+                df_up_sorted <- df_up %>% arrange(desc(enrichmentScore))
+                df_up_sorted <- df_up_sorted[1:10,]
 
-            df_down <- dot_df[dot_df$enrichmentScore < 0,]
-            df_down_sorted <- df_down %>% arrange(enrichmentScore)
-            df_down_sorted <- df_down_sorted[1:10,]
+                df_down <- dot_df[dot_df$enrichmentScore < 0,]
+                df_down_sorted <- df_down %>% arrange(enrichmentScore)
+                df_down_sorted <- df_down_sorted[1:10,]
 
-            print(df_up_sorted)
-            print(df_down_sorted)
+                print(df_up_sorted)
+                print(df_down_sorted)
 
-            p_up <- ggplot(df_up_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = FALSE))) +
-                    geom_point(aes(size = count, color = p.adjust)) +
-                    scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
-                    scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
-                    ylab(NULL) +
-                    xlim(0.6, 1.0) +
-                    ggtitle("Upregulated") +
-                    theme_bw(base_size = 12) +
-                    theme(plot.title = element_text(hjust = hjust_value))
+                p_up <- ggplot(df_up_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = FALSE))) +
+                        geom_point(aes(size = count, color = p.adjust)) +
+                        scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
+                        scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
+                        ylab(NULL) +
+                        xlim(0.6, 1.0) +
+                        ggtitle("Upregulated") +
+                        theme_bw(base_size = 12) +
+                        theme(plot.title = element_text(hjust = hjust_value))
 
-            p_down <- ggplot(df_down_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = TRUE))) +
-                    geom_point(aes(size = count, color = p.adjust)) +
-                    scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
-                    scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
-                    ylab(NULL) +
-                    scale_x_reverse(limits=c(-0.6,-1.0)) +
-                    ggtitle("Downregulated") +
-                    theme_bw(base_size = 12) +
-                    theme(plot.title = element_text(hjust = hjust_value))
+                p_down <- ggplot(df_down_sorted, aes(x = enrichmentScore, y = fct_reorder(Description, enrichmentScore, .desc = TRUE))) +
+                        geom_point(aes(size = count, color = p.adjust)) +
+                        scale_colour_gradient(limits=color_limits, low=low_color, high=high_color, na.value=na_color, trans="sqrt") +
+                        scale_size_binned(limits=count_limits, breaks=break_bin, range=radius_range) +
+                        ylab(NULL) +
+                        scale_x_reverse(limits=c(-0.6,-1.0)) +
+                        ggtitle("Downregulated") +
+                        theme_bw(base_size = 12) +
+                        theme(plot.title = element_text(hjust = hjust_value))
 
-            ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_up.pdf", sep=""), plot=p_up, height=20, width=16, units=c("cm"), dpi=600)
-            ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_down.pdf", sep=""), plot=p_down, height=20, width=16, units=c("cm"), dpi=600)
+                ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_up.pdf", sep=""), plot=p_up, height=20, width=16, units=c("cm"), dpi=600)
+                ggsave(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_down.pdf", sep=""), plot=p_down, height=20, width=16, units=c("cm"), dpi=600)
 
         }, error = function(e) {
+            file.create(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_up.pdf", sep=""))
+            file.create(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_down.pdf", sep=""))
             print("Not enough terms to plot dotplot:")
             print(e)
         })
@@ -210,7 +213,8 @@ for (c_ont in ontologies) {
                 Logicals=logical(),
                 Characters=character(),
                 stringsAsFactors=FALSE)
-
+        file.create(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_up.pdf", sep=""))
+        file.create(paste(opt$output_path, "/GSEA/plots/dotplot_GSEA_GO_", c_ont, "_down.pdf", sep=""))
         write.table(df, file = paste(opt$output_path, "/GSEA/tables/results_gsea_", c_ont, ".tsv", sep=""), sep = "\t", row.names = FALSE, col.names = TRUE)
         print(e)
     })

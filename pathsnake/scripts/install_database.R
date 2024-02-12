@@ -1,7 +1,15 @@
 #!/usr/bin/env Rscript
 
+if (!dir.exists("rlib")) {
+  dir.create("rlib")
+}
+
+.libPaths( c( .libPaths(), "rlib") )
+
 library(optparse)
 library(devtools)
+
+devtools::install_github("GuangchuangYu/GOSemSim", lib = "rlib")
 devtools::install_github("YuLab-SMU/clusterProfiler", lib = "rlib")
 
 option_list = list(

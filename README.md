@@ -207,6 +207,13 @@ conda env create -f snakemake.yml
 conda activate snakemake
 ```
 
+:exclamation: Make sure that you have a working c compiler installed to ensure that all R packages can be compiled.
+
+On Ubuntu you can install the `build-essential`s.
+```
+sudo apt-get install build-essential
+```
+
 2. Prepare your differential expression results
 
 We use results from the tool `deltaTE`, generated using `HRIBO`. If you want to use your own data please refer to [this section](#the-deltate-or-deseq-output).
