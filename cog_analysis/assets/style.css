@@ -1,0 +1,19 @@
+:root {
+    --main-bg-color: #485154; /* Dark background */
+    --secondary-bg-color: lightgray; /* Light grey background */
+    --text-color: black; /* Light text color */
+    --title-color: #3BC7ED; /* Spotify green for headers, or choose your color */
+}
+
+/* General body styling */
+body {
+    background-color: var(--main-bg-color); /* Dark background */
+    color: #fff; /* Light text color */
+    font-family: Arial, sans-serif; /* Modern font */
+}
+
+
+/* Styling for headers */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--title-color); /* Spotify green for headers, or choose your color */
+}
